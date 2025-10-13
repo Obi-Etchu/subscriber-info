@@ -8,16 +8,17 @@ export const getSubscriber = async (req, res) => {
       return res.status(400).json({ message: "Phone number is required" });
     }
 
-    const [rows] = await pool.query(
-      "SELECT * FROM people WHERE phone_number = ?",
+    // PostgreSQL uses $1, $2, $3... for parameter placeholders
+    const result = await pool.query(
+      "SELECT * FROM people WHERE phone_number = $1",
       [phone]
     );
 
-    if (rows.length === 0) {
+    if (result.rows.length === 0) {
       return res.status(404).json({ message: "Subscriber not found" });
     }
 
-    res.json(rows[0]);
+    res.json(result.rows[0]);
   } catch (error) {
     console.error("Database error:", error);
     res.status(500).json({ message: "Server error" });
