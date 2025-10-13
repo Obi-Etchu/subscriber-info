@@ -4,36 +4,25 @@ import dotenv from 'dotenv';
 const { Pool } = pkg;
 dotenv.config();
 
-// Use Render's DATABASE_URL, fallback to individual variables for local development
-const connectionConfig = process.env.DATABASE_URL 
-  ? {
-      connectionString: process.env.DATABASE_URL,
-      ssl: {
-        rejectUnauthorized: false
-      }
-    }
-  : {
-      host: process.env.DB_HOST,
-      user: process.env.DB_USER,
-      password: process.env.DB_PASSWORD,
-      database: process.env.DB_NAME,
-      port: process.env.DB_PORT || 5432,
-    };
-
-const pool = new Pool({
-  ...connectionConfig,
-  max: 10,
-  idleTimeoutMillis: 30000,
-  connectionTimeoutMillis: 2000,
+console.log('Database config check:', {
+  hasDatabaseUrl: !!process.env.DATABASE_URL,
+  url: process.env.DATABASE_URL ? 'Present' : 'Missing'
 });
 
-// Test connection
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+  ssl: { rejectUnauthorized: false },
+  max: 10,
+  idleTimeoutMillis: 30000,
+  connectionTimeoutMillis: 10000,
+});
+
 pool.on('connect', () => {
-  console.log('✅ Connected to PostgreSQL database');
+  console.log('✅ Connected to Render PostgreSQL');
 });
 
 pool.on('error', (err) => {
-  console.error('❌ PostgreSQL database error:', err);
+  console.error('❌ Database connection failed:', err.message);
 });
 
 export default pool;
