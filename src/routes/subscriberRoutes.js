@@ -3,6 +3,6 @@ import { getSubscriber } from "../controllers/subscriberController.js";
 
 const router = express.Router();
 
-router.get("/:phone", getSubscriber);
+router.get("/:query", getSubscriber);
 
 export default router;
